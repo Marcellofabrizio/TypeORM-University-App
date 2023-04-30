@@ -3,6 +3,6 @@ import { User } from "./User";
 
 @Entity()
 export class Professor extends User {
-    @Column()
-    speciality: string;
+  @Column()
+  speciality: string;
 }

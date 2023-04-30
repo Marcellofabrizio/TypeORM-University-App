@@ -3,11 +3,19 @@
    "version": "0.0.1",
    "description": "Awesome project developed with TypeORM.",
    "type": "commonjs",
+   "scripts": {
+      "start": "nodemon src/index.ts",
+      "build": "tsc -p .",
+      "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
+      "typeorm:sync": "npm run typeorm schema:sync",
+      "typeorm:drop": "npm run typeorm schema:drop"
+   },
    "devDependencies": {
       "@types/cors": "^2.8.13",
       "@types/express": "^4.17.17",
       "@types/node": "^16.18.25",
       "ts-node": "10.7.0",
+      "tsconfig-paths": "^4.2.0",
       "typescript": "4.5.2"
    },
    "dependencies": {
@@ -15,11 +23,8 @@
       "cors": "^2.8.5",
       "express": "^4.18.2",
       "mysql": "^2.18.1",
+      "nodemon": "^2.0.22",
       "reflect-metadata": "^0.1.13",
       "typeorm": "0.3.15"
-   },
-   "scripts": {
-      "start": "ts-node src/index.ts",
-      "typeorm": "typeorm-ts-node-commonjs"
    }
 }
