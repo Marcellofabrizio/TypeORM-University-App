@@ -1,8 +1,12 @@
-import { Entity, Column } from "typeorm";
+import { Entity, Column, OneToMany, JoinTable } from "typeorm";
 import { User } from "./User";
+import { Class } from "./Class";
 
 @Entity()
 export class Professor extends User {
-  @Column()
-  speciality: string;
+    @Column()
+    speciality: string;
+
+    @OneToMany(() => Class, (cls) => cls.professors)
+    classes: Class[];
 }

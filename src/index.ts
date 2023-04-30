@@ -1,4 +1,4 @@
-import studentRouter from "./router/Student/index";
+import appRouter from "./router/";
 import { AppDataSource } from "./data-source";
 import { User } from "./domain/User";
 import { Class } from "./domain/Class";
@@ -13,12 +13,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
-app.use(studentRouter);
+app.use(appRouter);
 
 app.listen(port, () => {
-  AppDataSource.initialize()
-    .then(async () => {
-      /*
+    AppDataSource.initialize()
+        .then(async () => {
+            /*
       const student1 = new Student();
       student1.firstName = "Marcello";
       student1.lastName = "Rei delas";
@@ -31,7 +31,7 @@ app.listen(port, () => {
       await AppDataSource.manager.save(course);
       */
 
-      console.log("App listening at port " + port);
-    })
-    .catch((error) => console.log(error));
+            console.log("App listening at port " + port);
+        })
+        .catch((error) => console.log(error));
 });
