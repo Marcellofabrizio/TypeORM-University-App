@@ -4,6 +4,7 @@ import {
     Column,
     ManyToMany,
     JoinTable,
+    JoinColumn,
     ManyToOne,
 } from "typeorm";
 
@@ -25,7 +26,6 @@ export class Class {
     @JoinTable()
     students: Student[];
 
-    @ManyToOne(() => Professor, (professor) => professor.classes)
-    @JoinTable()
-    professors: Professor;
+    @ManyToOne((type) => Professor, (professor) => professor.classes)
+    professor: Professor;
 }
