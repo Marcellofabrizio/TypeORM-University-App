@@ -17,9 +17,6 @@ import { Enrollment } from "./Enrollment";
 export class Student extends User {
 
     @OneToOne(() => Enrollment, enrollment => enrollment.student)
-    @JoinColumn()
     enrollment: Enrollment
 
-    @ManyToMany(() => Class, (cls) => cls.students)
-    classes: Class[];
 }

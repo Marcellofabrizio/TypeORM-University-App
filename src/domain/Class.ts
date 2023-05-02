@@ -10,6 +10,7 @@ import {
 
 import { Student } from "./Student";
 import { Professor } from "./Professor";
+import { Enrollment } from "./Enrollment";
 
 @Entity()
 export class Class {
@@ -22,10 +23,10 @@ export class Class {
     @Column()
     credits: number;
 
-    @ManyToMany(() => Student, (student) => student.classes)
-    @JoinTable()
-    students: Student[];
-
     @ManyToOne(() => Professor, (professor) => professor)
     professor: Professor;
+
+    @ManyToMany(() => Enrollment, (enrollment) => enrollment.classes)
+    @JoinTable()
+    enrollments: Enrollment[];
 }

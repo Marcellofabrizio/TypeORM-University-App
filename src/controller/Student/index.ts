@@ -191,13 +191,8 @@ export async function getEnrollment(
     next: NextFunction
 ) {
 
-    console.log(req)
-
     const id = req.params.id;
 
-    console.log(id)
-
-    const enrollmentRepository = AppDataSource.getRepository(Enrollment);
     const studentRepository = AppDataSource.getRepository(Student);
 
     try {
@@ -205,19 +200,14 @@ export async function getEnrollment(
             where: {
                 id: Number(id),
             },
-            relations: ["enrollment"],
+            relations: ["enrollment", "enrollment.classes", "enrollment.course"],
         });
 
         if (!student) {
             return next(new HTTPNotFoundException("Student not found"));
         }
 
-        const enrollment = await enrollmentRepository.findOne({
-            where: { id: student.enrollment.id },
-            relations: ["classes", "course"],
-        })
-
-        res.status(200).json(enrollment);
+        res.status(200).json(student.enrollment);
         res.end();
     } catch (err) {
         return next(

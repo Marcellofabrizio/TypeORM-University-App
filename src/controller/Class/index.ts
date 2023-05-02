@@ -6,6 +6,9 @@ import {
     HTTPBadRequestException,
     HTTPInternalServerErrorException,
 } from "../../../utils/response/responseErrors";
+import { DataSource, createQueryBuilder } from "typeorm";
+import { Enrollment } from "../../domain/Enrollment";
+import { Student } from "../../domain/Student";
 
 export async function getClasses(
     req: Request,
@@ -33,22 +36,28 @@ export async function getClass(
 ) {
     const id = Number(req.params.id);
     const repository = AppDataSource.getRepository(Class);
+    const enrollmentRepository = AppDataSource.getRepository(Enrollment);
+    const studentRepository = AppDataSource.getRepository(Student);
 
     try {
         const cls = await repository.findOne({
             where: { id: id },
             select: ["id", "name", "credits"],
-            relations: ["professor"],
+            relations: ["professor", "enrollments", "enrollments.student"],
         });
+
+        console.log(cls)
 
         if (!cls) {
             return next(new HTTPNotFoundException("Class not found"));
         }
 
-        res.status(200).json(cls);
+        res.status(200).json({ ...cls });
     } catch (err) {
         return next(
-            new HTTPInternalServerErrorException("Internal Server Error")
+            new HTTPInternalServerErrorException(
+                "Internal Server Error: " + err.message
+            )
         );
     }
 }
@@ -66,13 +75,14 @@ export async function postClass(
         cls.name = name;
         cls.credits = credits;
         cls.professor = professorId || null;
-        cls.students = [];
         repository.save(cls);
 
         res.status(200).json(cls);
     } catch (err) {
         return next(
-            new HTTPInternalServerErrorException("Internal Server Error: " + err.message)
+            new HTTPInternalServerErrorException(
+                "Internal Server Error: " + err.message
+            )
         );
     }
 }
@@ -101,7 +111,6 @@ export async function putClass(
         cls.name = name;
         cls.credits = credits;
         cls.professor = professorId;
-        cls.students = students;
 
         await repository.save(cls);
 
@@ -109,7 +118,9 @@ export async function putClass(
         res.end();
     } catch (err) {
         return next(
-            new HTTPInternalServerErrorException("Internal Server Error: " + err.message)
+            new HTTPInternalServerErrorException(
+                "Internal Server Error: " + err.message
+            )
         );
     }
 }
