@@ -72,7 +72,7 @@ export async function postClass(
         res.status(200).json(cls);
     } catch (err) {
         return next(
-            new HTTPInternalServerErrorException("Internal Server Error")
+            new HTTPInternalServerErrorException("Internal Server Error: " + err.message)
         );
     }
 }
@@ -95,7 +95,7 @@ export async function putClass(
         });
 
         if (!cls) {
-            throw new HTTPNotFoundException("Class not found");
+            return next(new HTTPNotFoundException("Class not found"));
         }
 
         cls.name = name;
@@ -108,14 +108,8 @@ export async function putClass(
         res.status(200).json(cls);
         res.end();
     } catch (err) {
-        if (err instanceof HTTPNotFoundException) {
-            res.status(404).json({
-                error: err.message,
-            });
-            res.end();
-        }
-
-        res.status(500);
-        res.end();
+        return next(
+            new HTTPInternalServerErrorException("Internal Server Error: " + err.message)
+        );
     }
 }

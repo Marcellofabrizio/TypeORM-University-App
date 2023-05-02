@@ -7,6 +7,6 @@ export class Professor extends User {
     @Column()
     speciality: string;
 
-    @OneToMany(() => Class, (cls) => cls.professor)
+    @OneToMany(() => Class, (cls) => cls)
     classes: Class[];
 }

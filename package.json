@@ -4,7 +4,8 @@
    "description": "Awesome project developed with TypeORM.",
    "type": "commonjs",
    "scripts": {
-      "start": "nodemon src/index.ts",
+      "start": "ts-node src/index.ts",
+      "start:dev": "nodemon src/index.ts",
       "build": "tsc -p .",
       "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
       "typeorm:sync": "npm run typeorm schema:sync",

@@ -9,6 +9,7 @@ import {
 
 import { Class } from "./Class";
 import { Student } from "./Student";
+import { Enrollment } from "./Enrollment";
 
 @Entity()
 export class Course {
@@ -25,6 +26,6 @@ export class Course {
     @JoinTable()
     classes: Class[];
 
-    @OneToMany(() => Student, (student) => student.course)
-    students: Student[];
+    @OneToMany(() => Enrollment, (enrollment) => enrollment.course)
+    enrollments: Enrollment[];
 }

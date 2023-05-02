@@ -26,6 +26,6 @@ export class Class {
     @JoinTable()
     students: Student[];
 
-    @ManyToOne((type) => Professor, (professor) => professor.classes)
+    @ManyToOne(() => Professor, (professor) => professor)
     professor: Professor;
 }
