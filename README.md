@@ -1,4 +1,4 @@
-# Awesome Project Build with TypeORM
+# TypeORM University App
 
 Steps to run this project:
 
