@@ -3,12 +3,8 @@ import { AppDataSource } from "../../data-source";
 import { Request, Response, NextFunction, response } from "express";
 import {
     HTTPNotFoundException,
-    HTTPBadRequestException,
     HTTPInternalServerErrorException,
 } from "../../../utils/response/responseErrors";
-import { DataSource, createQueryBuilder } from "typeorm";
-import { Enrollment } from "../../domain/Enrollment";
-import { Student } from "../../domain/Student";
 
 export async function getClasses(
     req: Request,
@@ -21,7 +17,7 @@ export async function getClasses(
     try {
         const Classes = await repository.find({
             select: ["id", "name", "credits"],
-            relations: ["professor"],
+            relations: ["professor", "enrollments", "enrollments.student"],
         });
         res.status(200).json(Classes);
     } catch (err) {
@@ -34,10 +30,11 @@ export async function getClass(
     res: Response,
     next: NextFunction
 ) {
+
+    console.log(req.params)
+
     const id = Number(req.params.id);
     const repository = AppDataSource.getRepository(Class);
-    const enrollmentRepository = AppDataSource.getRepository(Enrollment);
-    const studentRepository = AppDataSource.getRepository(Student);
 
     try {
         const cls = await repository.findOne({
@@ -46,7 +43,7 @@ export async function getClass(
             relations: ["professor", "enrollments", "enrollments.student"],
         });
 
-        console.log(cls)
+        console.log(cls);
 
         if (!cls) {
             return next(new HTTPNotFoundException("Class not found"));
