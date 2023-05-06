@@ -1,5 +1,11 @@
 import { getClasses, getClass } from "./openAPI/classes.swagger";
 import { getProfessors, getProfessor } from "./openAPI/professor.swagger";
+import {
+    getStudents,
+    getStudent,
+    postStudent,
+    enrollStudent,
+} from "./openAPI/students.swagger";
 
 export const swaggerDocument = {
     openapi: "3.0.1",
@@ -28,6 +34,16 @@ export const swaggerDocument = {
         },
         "/professors/{id}": {
             get: getProfessor,
+        },
+        "/students": {
+            get: getStudents,
+            post: postStudent,
+        },
+        "/students/{id}": {
+            get: getStudent,
+        },
+        "/enroll/{id}": {
+            put: enrollStudent,
         },
     },
     definitions: {
