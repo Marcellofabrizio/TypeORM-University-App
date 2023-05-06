@@ -3,6 +3,7 @@ import { Course } from "../../domain/Course";
 import { AppDataSource } from "../../data-source";
 import { Request, Response, NextFunction, response } from "express";
 import {
+    HTTPBadRequestException,
     HTTPInternalServerErrorException,
     HTTPNotFoundException,
 } from "../../../utils/response/responseErrors";
@@ -44,6 +45,7 @@ export async function getStudent(
         const student = await repository.findOne({
             where: { id: id },
             select: ["id", "firstName", "lastName", "email"],
+            relations: ["enrollment"],
         });
 
         res.status(200).json(student);
@@ -64,6 +66,10 @@ export async function postStudent(
     const { firstName, lastName } = req.body;
     const studentRepository = AppDataSource.getRepository(Student);
 
+    if (!firstName) {
+        return next(new HTTPBadRequestException("Bad Request: No firstName"));
+    }
+
     try {
         const email = `${firstName}.${lastName}@uni.com`
             .replace(" ", "")
@@ -77,11 +83,11 @@ export async function postStudent(
 
         res.status(200).json(student);
     } catch (err) {
-        res.status(400).json({
-            error: err.message,
-        });
-
-        res.end();
+        return next(
+            new HTTPInternalServerErrorException(
+                "Internal Server Error: " + err.message
+            )
+        );
     }
 }
 
@@ -131,10 +137,24 @@ export async function enrollStudent(
     const { id } = req.params;
     const { courseId, semester, classesIds } = req.body;
 
+    if (!courseId) {
+        return next(
+            new HTTPBadRequestException("Bad Request: No Course provided")
+        );
+    }
+
+    if (!classesIds?.length) {
+        return next(
+            new HTTPBadRequestException("Bad Request: No Classes provided")
+        );
+    }
+
     const enrollmentRepository = AppDataSource.getRepository(Enrollment);
     const studentRepository = AppDataSource.getRepository(Student);
     const courseRepository = AppDataSource.getRepository(Course);
     const classRepository = AppDataSource.getRepository(Class);
+
+    const classesToEnroll = [...new Set(classesIds)]
 
     try {
         const student = await studentRepository.findOne({
@@ -162,15 +182,13 @@ export async function enrollStudent(
         enrollment.course = course;
         enrollment.semester = semester;
 
-        if (classesIds) {
-            const classes = await classRepository.find({
-                where: {
-                    id: In([...classesIds]),
-                },
-            });
+        const classes = await classRepository.find({
+            where: {
+                id: In([...classesToEnroll]),
+            },
+        });
 
-            enrollment.classes = classes || [];
-        }
+        enrollment.classes = classes || [];
 
         enrollmentRepository.save(enrollment);
 
@@ -190,7 +208,6 @@ export async function getEnrollment(
     res: Response,
     next: NextFunction
 ) {
-
     const id = req.params.id;
 
     const studentRepository = AppDataSource.getRepository(Student);
@@ -200,7 +217,11 @@ export async function getEnrollment(
             where: {
                 id: Number(id),
             },
-            relations: ["enrollment", "enrollment.classes", "enrollment.course"],
+            relations: [
+                "enrollment",
+                "enrollment.classes",
+                "enrollment.course",
+            ],
         });
 
         if (!student) {
@@ -217,4 +238,3 @@ export async function getEnrollment(
         );
     }
 }
-
